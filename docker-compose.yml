@@ -1,41 +1,38 @@
 version: "3.8"
+
 services:
-  # sqlserver:
-  #   image: mcr.microsoft.com/mssql/server:2022-latest
-  #   container_name: sqlserver
-  #   ports:
-  #     - "1433:1433"
-  #   environment:
-  #     SA_PASSWORD: "123"
-  #     ACCEPT_EULA: "Y"
   backend:
-    build: ./Thoai-pro-spring
+    build:
+      context: ./backend
+      args:
+        - MAVEN_OPTS=-Xmx512m
     container_name: spring_app1
     ports:
       - "8002:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-    # depends_on:
-    #   - db
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
 
   frontend:
-    build: ./my-app
+    build:
+      context: ./my-app
+      args:
+        - NEXT_TELEMETRY_DISABLED=1
+        - NODE_OPTIONS=--max-old-space-size=512
     container_name: next_app1
     ports:
       - "3001:3000"
     depends_on:
       - backend
-
-  # db:
-  #   image: mysql:8`
-  #   container_name: mysql_db
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #     MYSQL_DATABASE: app_db
-  #   ports:
-  #     - "3306:3306"
-  #   volumes:
-  #     - mysql_data:/var/lib/mysql
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
 
 volumes:
   mysql_data:
