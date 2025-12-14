@@ -3,8 +3,8 @@ import { API_URL } from "@/helper/api";
 
 const http = axios.create({
   // baseURL: "http://localhost:8000/Thoai-pro-spring",
-  //baseURL: "http://103.90.225.130:9000",
-  baseURL: API_URL,
+  baseURL: "http://103.90.225.130:8002",
+  // baseURL: API_URL,
   withCredentials: true,
 });
 
