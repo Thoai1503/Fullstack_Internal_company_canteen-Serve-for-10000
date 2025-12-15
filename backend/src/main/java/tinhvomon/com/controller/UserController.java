@@ -97,7 +97,7 @@ public class UserController {
         		    .secure(false)          // requires HTTPS
         		    .path("/")
         		    .maxAge(7 * 24 * 60 * 60)
-        		    .sameSite("None")
+        		    .sameSite("Lax")
         		    .build();
         		response.addHeader("Set-Cookie", tokenCookie.toString());
                 ResponseCookie roleCookie = ResponseCookie.from("role", role)
@@ -105,7 +105,7 @@ public class UserController {
             		    .secure(false)          // requires HTTPS
             		    .path("/")
             		    .maxAge(7 * 24 * 60 * 60)
-            		    .sameSite("None")
+            		    .sameSite("Lax")
             		    .build();
             		response.addHeader("Set-Cookie", roleCookie.toString());
                     ResponseCookie userCookie = ResponseCookie.from("user", token)
@@ -113,7 +113,7 @@ public class UserController {
                 		    .secure(false)          // requires HTTPS
                 		    .path("/")
                 		    .maxAge(7 * 24 * 60 * 60)
-                		    .sameSite("None")
+                		    .sameSite("Lax")
                 		    .build();
                 		response.addHeader("Set-Cookie", userCookie.toString());
 	    
