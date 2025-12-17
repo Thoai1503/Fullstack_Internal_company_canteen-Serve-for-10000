@@ -2,6 +2,7 @@
 import { useCartFeature } from "@/hook/admin/useCartFeature";
 import { FoodItem } from "@/types/foodItem";
 import React, { useState } from "react";
+import { API_URL } from "@/helper/api";
 
 const FoodItems = ({
   item,
@@ -18,7 +19,7 @@ const FoodItems = ({
     <div key={idx} className="col-lg-4 menu-item">
       <a href={foodItem.image} className="glightbox">
         <img
-          src={`http://localhost:8000/Thoai-pro-spring/upload/${foodItem.image.trim()}?h=120&fit=crop&auto=format&dpr=2 2x`}
+          src={`${API_URL}/upload/${foodItem.image.trim()}?h=120&fit=crop&auto=format&dpr=2 2x`}
           className="menu-img img-fluid"
           alt={foodItem.image}
         />

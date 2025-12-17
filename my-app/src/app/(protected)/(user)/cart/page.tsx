@@ -75,7 +75,7 @@ export default async function Cart() {
                       <div className="col-lg-2">
                         <img
                           width={80}
-                          src={`http://localhost:8000/Thoai-pro-spring/upload/${item?.food.image}`}
+                          src={`${API_URL}/upload/${item?.food.image}`}
                           alt={item.food.image}
                         />
                       </div>
