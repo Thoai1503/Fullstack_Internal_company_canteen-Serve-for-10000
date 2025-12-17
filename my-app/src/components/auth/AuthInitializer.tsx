@@ -34,7 +34,7 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
       } catch (error) {
         // Verification failed - redirect to login
-        console.error("Auth verification failed:", error);
+        console.log("Auth verification failed:", error);
         localStorage.removeItem("token"); // Clear invalid token
         router.push("/login");
         setIsLoading(false);

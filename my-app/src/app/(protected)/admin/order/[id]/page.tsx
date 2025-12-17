@@ -12,8 +12,7 @@ export default async function BlogPostPage({
 }) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
-  const user_id = Number(cookieStore.get("user")?.value);
-  console.log("User id:" + user_id);
+  const user_id = 6;
   if (!user_id) {
     return redirect("/login");
   }

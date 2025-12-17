@@ -16,6 +16,7 @@ import tinhvomon.com.repository.IngredientInventoryRepository;
 @RequestMapping("/inventory")
 public class IngredientInventoryController {
 	
+		
 	@Autowired
 	private final IngredientInventoryRepository ingredientInventoryRepository;
 	
