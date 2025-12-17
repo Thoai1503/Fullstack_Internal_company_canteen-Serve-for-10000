@@ -7,6 +7,7 @@ import axios from "axios";
 import { headers } from "next/headers";
 import http from "@/lib/http";
 import { FoodType } from "@/types/foodType";
+import { API_URL } from "@/helper/api";
 
 type Food = {
   id?: string;
@@ -48,9 +49,7 @@ export default function EditFoodForm({
   useEffect(() => {
     setFood((s) => ({ ...s, ...initialData }));
     setPreview(
-      initialData.image
-        ? `http://localhost:8000/Thoai-pro-spring/upload/${initialData.image}`
-        : null
+      initialData.image ? `${API_URL}/upload/${initialData.image}` : null
     );
   }, [initialData]);
 

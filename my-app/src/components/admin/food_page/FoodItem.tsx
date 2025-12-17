@@ -3,6 +3,7 @@ import type { FoodItem } from "@/types/foodItem";
 import Image from "next/image";
 import React, { useState } from "react";
 import AddImageModal from "./AddImageModal";
+import { API_URL } from "@/helper/api";
 
 interface FoodItemsProps {
   item: FoodItem;
@@ -17,7 +18,7 @@ function FoodItems({ item, index }: FoodItemsProps) {
 
   const imageUrl =
     item.image.trim() !== "default.jpg"
-      ? `http://localhost:8000/Thoai-pro-spring/upload/${item.image.trim()}`
+      ? `${API_URL}/upload/${item.image.trim()}`
       : "https://www.fivebranches.edu/wp-content/uploads/2021/08/default-image.webp";
 
   return (
