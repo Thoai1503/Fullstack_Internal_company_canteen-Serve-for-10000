@@ -33,7 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
           <li>
             <Link href="/admin" className="nav-link text-white">
               <svg className="bi me-2" width="16" height="16"></svg>
-              Dashboard
+              Bảng điều khiển
             </Link>
           </li>
           <li>

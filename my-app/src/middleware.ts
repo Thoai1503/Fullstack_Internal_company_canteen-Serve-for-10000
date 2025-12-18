@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
   const role = req.cookies.get("role")?.value;
-
+  console.log("Miiddleware ");
   console.log("Auth: " + token + " " + role);
 
   const url = req.nextUrl.pathname;
@@ -12,6 +12,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/admin", req.url));
   }
   if (role?.startsWith("chef") && !url.startsWith("/chef")) {
+    console.log("Miiddleware checking chef role");
     return NextResponse.redirect(new URL("/chef", req.url));
   }
 

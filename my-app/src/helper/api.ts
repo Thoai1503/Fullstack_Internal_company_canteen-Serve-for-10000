@@ -2,4 +2,4 @@
 export const API_URL = "http://103.90.225.130:8002";
 //export const API_URL = "http://localhost:8000";
 export const INTERNAL_API = "http://backend:8080";
-//export const INTERNAL_API ="http://localhost:8000";
+//export const INTERNAL_API = "http://localhost:8000";
