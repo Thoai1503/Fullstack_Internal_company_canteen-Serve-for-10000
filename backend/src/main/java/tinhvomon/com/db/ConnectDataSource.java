@@ -38,7 +38,9 @@ public class ConnectDataSource {
         ds.setServerName("103.90.225.130");
         ds.setPortNumber(1433);
         ds.setDatabaseName("ProductDB");       
-        ds.setTrustServerCertificate(true); // 
+        ds.setEncrypt(false);              
+        ds.setTrustServerCertificate(true); 
+        ds.setLoginTimeout(10); 
          
 
     }
