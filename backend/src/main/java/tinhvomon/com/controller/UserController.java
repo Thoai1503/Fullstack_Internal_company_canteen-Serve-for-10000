@@ -108,7 +108,7 @@ public class UserController {
             		    .sameSite("Lax")
             		    .build();
             		response.addHeader("Set-Cookie", roleCookie.toString());
-                    ResponseCookie userCookie = ResponseCookie.from("user", token)
+                    ResponseCookie userCookie = ResponseCookie.from("user", String.valueOf(us.getId()))
                 		    .httpOnly(true)
                 		    .secure(false)          // requires HTTPS
                 		    .path("/")

@@ -15,7 +15,7 @@ import { redirect } from "next/navigation";
 export default async function Home() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
-  const user_id = 7; // Number(cookieStore.get("user")?.value);
+  const user_id = Number(cookieStore.get("user")?.value);
   console.log("User id:" + user_id);
   console.log("Url :" + API_URL);
   if (!user_id) {

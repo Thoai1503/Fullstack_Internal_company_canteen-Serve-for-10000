@@ -20,12 +20,20 @@ public class ConnectDataSource {
         // ds.setDatabaseName("ProductDB");       
         // ds.setTrustServerCertificate(true); // 
          ds = new SQLServerDataSource();
-        ds.setUser("giangthoai2000_SQLLogin_1");
-        ds.setPassword("qsbnp3w54h");
-        ds.setServerName("ShoeShop.mssql.somee.com");
-        ds.setPortNumber(1433);
-        ds.setDatabaseName("ShoeShop");       
-        ds.setTrustServerCertificate(true); // 
+         
+         String dbUser = System.getenv("DB_USER");
+         String dbPass = System.getenv("DB_PASSWORD");
+         String dbServer = System.getenv("DB_SERVER");
+         String dbName = System.getenv("DB_NAME");
+         String dbPort = System.getenv("DB_PORT");
+         
+         ds.setUser(dbUser != null ? dbUser : "sa"); 
+         ds.setPassword(dbPass); // Mật khẩu bí mật lấy từ Docker
+         ds.setServerName(dbServer != null ? dbServer : "localhost");
+         ds.setPortNumber(dbPort != null ? Integer.parseInt(dbPort) : 1433);
+         ds.setDatabaseName(dbName != null ? dbName : "ProductDB");
+         
+
     }
 
 	public static SQLServerDataSource getDataSource() {
