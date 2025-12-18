@@ -1,4 +1,4 @@
-import { API_URL } from "@/helper/api";
+import { API_URL, INTERNAL_API } from "@/helper/api";
 import BarCharts from "@/components/admin/dashboard/BarChart";
 import OrderTable from "@/components/admin/dashboard/OrderTable";
 import PieCharts from "@/components/admin/dashboard/PieChart";
@@ -14,7 +14,7 @@ const DashBoard = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   console.log("Token : " + token);
-  const { data: dashboard } = await axios.get(`http://backend:8080/dashboard`, {
+  const { data: dashboard } = await axios.get(`${INTERNAL_API}/dashboard`, {
     headers: {
       Authorization: token ? `Bearer ${token}` : "",
     },

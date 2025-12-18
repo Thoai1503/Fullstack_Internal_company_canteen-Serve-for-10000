@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 
 import moment from "moment";
 import { redirect } from "next/navigation";
+import { INTERNAL_API } from "@/helper/api";
 
 export default async function BlogPostPage({
   params,
@@ -21,7 +22,7 @@ export default async function BlogPostPage({
   console.log("Id: " + id);
 
   const { data: orders } = await axios.get(
-    `http://backend:8080/orderitem/order/${id}`,
+    `${INTERNAL_API}/orderitem/order/${id}`,
     {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
@@ -32,7 +33,7 @@ export default async function BlogPostPage({
   // TODO: Thêm API calls để lấy dữ liệu đơn hàng và lịch sử
   // const { data: orderDetail } = await axios.get(`http://localhost:8000/Thoai-pro-spring/order/${id}`, {...});
   const { data: statusHistorys } = await axios.get<OrderStatusHistory[]>(
-    `http://backend:8080/order-status-history/order/${id}`,
+    `${INTERNAL_API}/order-status-history/order/${id}`,
     {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",

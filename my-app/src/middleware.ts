@@ -11,6 +11,9 @@ export function middleware(req: NextRequest) {
   if (role?.startsWith("admin") && !url.startsWith("/admin")) {
     return NextResponse.redirect(new URL("/admin", req.url));
   }
+  if (role?.startsWith("chef") && !url.startsWith("/chef")) {
+    return NextResponse.redirect(new URL("/chef", req.url));
+  }
 
   // Chặn vào admin nếu không phải admin
   if (url.startsWith("/admin")) {
@@ -30,5 +33,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/profile/:path*", "/"],
+  matcher: ["/admin/:path*", "/profile/:path*", "/", "/chef/:path*"],
 };

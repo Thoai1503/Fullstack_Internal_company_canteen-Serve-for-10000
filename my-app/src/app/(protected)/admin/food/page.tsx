@@ -1,4 +1,4 @@
-import { API_URL } from "@/helper/api";
+import { API_URL, INTERNAL_API } from "@/helper/api";
 import FoodList from "@/components/admin/food_page/FoodList";
 import { FoodItem } from "@/types/foodItem";
 import axios from "axios";
@@ -12,7 +12,7 @@ export default async function Food() {
   const token = cookieStore.get("token")?.value;
 
   const res = await axios
-    .get(`http://backend:8080/fooditem`, {
+    .get(`${INTERNAL_API}/fooditem`, {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
       },

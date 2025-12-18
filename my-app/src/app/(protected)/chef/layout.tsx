@@ -8,7 +8,7 @@ export default function ChefLayout({
   return (
     <AuthInitializer>
       <div className="d-flex">
-        <Sidebar />
+        <Sidebar role="chef" />
 
         <div
           className="container mx-4 mt-3"
