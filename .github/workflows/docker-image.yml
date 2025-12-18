@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build-and-deploy:
@@ -32,7 +32,7 @@ jobs:
           push: true
           tags: |
             thoaimanhlong/fullstack_internal_company_canteen-serve-for-10000-backend:latest
-            thoaimanhlong/ fullstack_internal_company_canteen-serve-for-10000-backend:${{ github.sha }}
+            thoaimanhlong/fullstack_internal_company_canteen-serve-for-10000-backend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
