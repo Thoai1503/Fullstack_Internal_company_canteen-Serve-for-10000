@@ -1,7 +1,7 @@
 "use server";
 
 import "aos/dist/aos.css";
-import { API_URL } from "@/helper/api";
+import { API_URL, INTERNAL_API } from "@/helper/api";
 import MenuSection from "@/components/MenuSection";
 import HeroSection from "@/components/client/HeroSection";
 import { cookies } from "next/headers";
@@ -23,7 +23,7 @@ export default async function Home() {
   }
 
   const { data: cartItems } = await axios.get<CartItem[]>(
-    `${API_URL}/cartitem/user/${user_id}`,
+    `${INTERNAL_API}/cartitem/user/${user_id}`,
     {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
