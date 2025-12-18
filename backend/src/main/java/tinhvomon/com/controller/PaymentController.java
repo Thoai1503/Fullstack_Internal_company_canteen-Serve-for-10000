@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import tinhvomon.com.models.CancellationRequest;
 import tinhvomon.com.models.Cart;
 import tinhvomon.com.models.CartItem;
+import tinhvomon.com.models.FoodIngredient;
 import tinhvomon.com.models.FoodType;
 import tinhvomon.com.models.Order;
 import tinhvomon.com.models.OrderItems;
@@ -56,7 +57,7 @@ public class PaymentController {
 	@Autowired
 	private VNPay vnPay ;
     @PostMapping("")
-    public ResponseEntity<?> create ( HttpServletRequest request,@RequestBody VnPayPayload vnPayPayload) throws Exception {
+    public ResponseEntity<?> create (HttpServletRequest request,@RequestBody VnPayPayload vnPayPayload) throws Exception {
        		String url = vnPay.createPayment(request);
 		Order o = new Order();
 		var user_id =Integer.valueOf( request.getParameter("orderInfo"));
@@ -65,8 +66,12 @@ public class PaymentController {
 		o.setStatus(1);
 		HashSet<CartItem> list =  cartItemRepository.FindByUserId(user_id);
 		//check lượng tồn kho
+		var iilist =	ingredientInventoryRepository.CheckingStock(list);
+		for(var i : iilist) {
+			System.out.println("Id: "+i);
+		}
 		if(// nếu mảng > 0 -> tồn tại sản phẩm hết hàng	
-			ingredientInventoryRepository.CheckingStock(list).size()>0
+			iilist.size()>0
 		  ) {
 			return ResponseEntity.ok("Hết hàng");
 			}
@@ -121,22 +126,42 @@ System.out.println("Request: "+ request.getRemoteAddr());
            var user_id=  Integer.valueOf( fields.get("vnp_OrderInfo"));
            var responseCode = String.valueOf(fields.get("vnp_ResponseCode"));
            System.out.println( "Payment info: " + user_id);
-           Cart cart=  cartRepository.FindbyUserId(user_id);
+           Cart cart=  cartRepository.FindbyUserId(user_id); 
            System.out.println( "Cart: " + cart);
            
            
            
            if(responseCode.equals("00")) {
+        	  	 System.out.println("Cập nhật tồn kho");
         	   Order pendingOrder = orderRepository.FindPendingByUserId(user_id);
+        	   
+        	   //cập nhật tồn kho
+        	   HashSet<OrderItems> orderItems = orderItemRepository.FindByOrderId(pendingOrder.getId());
+        	   System.out.println("order item length: "+ orderItems.size());
+        	   for(OrderItems item:orderItems) {
+            	   System.out.println("order item info: "+ item.getFood_id() +" / " +item.getQuantity());
+        		  //phân rã ra từng thành phần
+        		  HashSet<FoodIngredient> fiList = ingredientInventoryRepository.ExtractToFoodIngredient(item.getFood_id(), item.getQuantity());
+        		  	 System.out.println("Ingredient length: "+ fiList.size());
+        		     for(FoodIngredient fid:fiList) {
+        		 var stock = ingredientInventoryRepository.substractStock(fid.getIngredient_id(), fid.getQuantity());
+        		    	 System.out.println("Updated stock: "+ stock);
+        		     }  
+        		     
+        	   } 
+        	      
+        	   
+        	   //cập nhật trạng thái đơn hàng
         	   pendingOrder.setStatus(2);	
         	   var cancellationRequest = new CancellationRequest();
         	   cancellationRequest.setCancellation_status(0);
         	   pendingOrder.setCancellation_status(cancellationRequest);
-        	  Order  order = orderRepository.update(pendingOrder);
+        	   Order  order = orderRepository.update(pendingOrder);
+        	   //xoá giỏ hàng
         	   var dCartItemsRe= cartItemRepository.delete(cart.getId());
         	   
         	   System.out.println( "Re: " + dCartItemsRe);
-        	   
+        	   //cập nhật lịch sử trạng thái
         	   osh.setOrder_id(pendingOrder.getId());
         	   osh.setOld_status(1);
         	   osh.setNew_status(2);
@@ -147,7 +172,7 @@ System.out.println("Request: "+ request.getRemoteAddr());
         	   
         	   System.out.println("OrderStatusHistory Re: " + re.getId());
         	   
-        	     return new RedirectView("http://localhost:3000/success");
+        	     return new RedirectView("http://103.90.225.130:3001/success");
            }
            
            

@@ -89,7 +89,7 @@ public class OrderItemRepository implements IRepo<OrderItems> {
 				ord.setOrder_id(order_id);
 				ord.setQuantity(rs.getInt("quantity"));
 				ord.setTotal_price(rs.getDouble("total_price"));
-				ord.setFood_id(rs.getInt("id"));
+				ord.setFood_id(rs.getInt("food_id"));
 			    ord.setFood(new FoodItem(rs.getInt("food_id"),rs.getString("name"),0,"",0,rs.getString("image"),true,true));
 			   
 				list.add(ord);

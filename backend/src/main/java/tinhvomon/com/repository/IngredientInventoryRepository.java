@@ -62,6 +62,26 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 		}
 		return null;
 	}
+	public Double substractStock(int id,Double stock) {
+		String sql = "update IngredientInventory set stock -= ? where id = ?";
+		
+		try(Connection con = sqldts.getConnection();
+		          PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+			ps.setDouble(1, stock);
+			ps.setInt(2, id);
+			
+			int row = ps.executeUpdate();
+		    System.out.println("Số dòng được cập nhật vào cơ sở dữ liệu: " + row);
+			if(row>0) {
+				return stock;
+			}
+			
+		}catch(Exception  ex)
+		{
+			ex.printStackTrace();
+		}
+		return null;
+	}
 
 	@Override
 	public boolean delete(int id) {
@@ -158,7 +178,7 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 		var list =this.getAllList();
 		for (IngredientInventory item :list) {
 			if(item.getId()== id&&  quantity> item.getStock()) {
-				return true;
+				return true;	
 			}
 		}
 		return false;
@@ -166,6 +186,7 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 	public HashSet<FoodIngredient> ExtractToFoodIngredient(int food_id,int cart_item_quantity){
 		return foodIngredientRepository.FindByFoodIdInCart(food_id,cart_item_quantity);
 	}
+
 	
 	
 	
