@@ -40,7 +40,7 @@ jobs:
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
-          context: ./myapp
+          context: ./my-app
           push: true
           tags: |
             thoaimanhlong/fullstack_internal_company_canteen-serve-for-10000-frontend:latest
