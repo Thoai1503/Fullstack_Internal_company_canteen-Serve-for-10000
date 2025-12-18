@@ -2,39 +2,21 @@ version: "3.8"
 
 services:
   backend:
-    build:
-      context: ./backend
-      args:
-        - MAVEN_OPTS=-Xmx512m
-    container_name: spring_app1
-    restart: unless-stopped
+    image: thoaimanhlong/fullstack_internal_company_canteen-serve-for-10000-backend:latest
+    container_name: fullstack_internal_company_canteen-serve-for-10000-backend
     ports:
       - "8002:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 768M
+    restart: unless-stopped
 
   frontend:
-    build:
-      context: ./my-app
-      args:
-        - NEXT_TELEMETRY_DISABLED=1
-        - NODE_OPTIONS=--max-old-space-size=512
-    container_name: next_app1
-    restart: unless-stopped
+    image: thoaimanhlong/fullstack_internal_company_canteen-serve-for-10000-frontend:latest
+    container_name: fullstack_internal_company_canteen-serve-for-10000-frontend
     ports:
       - "3001:3000"
+    environment:
+      - NODE_ENV=production
     depends_on:
       - backend
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 768M
-
-volumes:
-  mysql_data:
+    restart: unless-stopped
