@@ -31,11 +31,14 @@ export default async function Home() {
     }
   );
 
-  const { data: foods } = await axios.get<FoodItem[]>(`${API_URL}/fooditem`, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
+  const { data: foods } = await axios.get<FoodItem[]>(
+    `${INTERNAL_API}/fooditem`,
+    {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    }
+  );
   const foodList = foods.map((item) => {
     const cartItem = cartItems.find((c) => c.food.id == item.id);
     if (!cartItem) {
