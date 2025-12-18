@@ -23,7 +23,7 @@ export default async function Home() {
   }
 
   const { data: cartItems } = await axios.get<CartItem[]>(
-    `http://backend:8080/cartitem/user/${user_id}`,
+    `${API_URL}/cartitem/user/${user_id}`,
     {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
@@ -31,14 +31,11 @@ export default async function Home() {
     }
   );
 
-  const { data: foods } = await axios.get<FoodItem[]>(
-    `http://backend:8080/fooditem`,
-    {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    }
-  );
+  const { data: foods } = await axios.get<FoodItem[]>(`${API_URL}/fooditem`, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
   const foodList = foods.map((item) => {
     const cartItem = cartItems.find((c) => c.food.id == item.id);
     if (!cartItem) {
