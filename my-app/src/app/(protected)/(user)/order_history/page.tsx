@@ -1,4 +1,4 @@
-import { API_URL } from "@/helper/api";
+import { API_URL, INTERNAL_API } from "@/helper/api";
 import OrderHistoryItem from "@/components/client/order_history/OrderHistoryItem";
 import { PREPARE_TIME } from "@/helper/key";
 import axios from "axios";
@@ -15,13 +15,16 @@ const OrderHistory = async () => {
   if (!user_id) {
     return redirect("/login");
   }
-  const { data: orders } = await axios.get(`${API_URL}/order/user/${user_id}`, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
+  const { data: orders } = await axios.get(
+    `${INTERNAL_API}/order/user/${user_id}`,
+    {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    }
+  );
   const { data: time } = await axios.get(
-    `${API_URL}/config/get?key=${PREPARE_TIME}`,
+    `${INTERNAL_API}/config/get?key=${PREPARE_TIME}`,
     {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",

@@ -1,5 +1,5 @@
 "use server";
-import { API_URL } from "@/helper/api";
+import { API_URL, INTERNAL_API } from "@/helper/api";
 import { CartItem } from "@/types/cartItem";
 import axios from "axios";
 
@@ -16,7 +16,7 @@ export default async function Cart() {
     return redirect("/login");
   }
   const { data: cartItems } = await axios.get<CartItem[]>(
-    `${API_URL}/cartitem/user/${user_id}`,
+    `${INTERNAL_API}/cartitem/user/${user_id}`,
     {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",

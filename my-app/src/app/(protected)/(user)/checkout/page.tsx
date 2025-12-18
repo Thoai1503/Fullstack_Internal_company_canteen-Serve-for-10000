@@ -1,4 +1,4 @@
-import { API_URL } from "@/helper/api";
+import { API_URL, INTERNAL_API } from "@/helper/api";
 import CheckoutButton from "@/components/CheckoutButton";
 import Checkouts from "@/components/client/checkout/Checkouts";
 import PaymentMethod from "@/components/client/checkout/PaymentMethod";
@@ -17,7 +17,7 @@ export default async function Checkout() {
     return redirect("/login");
   }
   const { data: cartItems } = await axios.get<CartItem[]>(
-    `${API_URL}/cartitem/user/${user_id}`,
+    `${INTERNAL_API}/cartitem/user/${user_id}`,
     {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",

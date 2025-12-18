@@ -1,4 +1,4 @@
-import { API_URL } from "@/helper/api";
+import { API_URL, INTERNAL_API } from "@/helper/api";
 import axios from "axios";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -20,11 +20,14 @@ export default async function BlogPostPage({
 
   console.log("Id: " + id);
 
-  const { data: orders } = await axios.get(`${API_URL}/orderitem/order/${id}`, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
+  const { data: orders } = await axios.get(
+    `${INTERNAL_API}/orderitem/order/${id}`,
+    {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    }
+  );
 
   return (
     <div className="container">
