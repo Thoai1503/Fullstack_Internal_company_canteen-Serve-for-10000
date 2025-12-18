@@ -163,7 +163,8 @@ System.out.println("Request: "+ request.getRemoteAddr());
         	   System.out.println( "Re: " + dCartItemsRe);
         	   //cập nhật lịch sử trạng thái
         	   osh.setOrder_id(pendingOrder.getId());
-        	   osh.setOld_status(1);
+        	   osh.setOld_status(1); 
+        	   //ok
         	   osh.setNew_status(2);
         	   osh.setChanged_by(user_id);
         	   osh.setChanged_by_role("user");
