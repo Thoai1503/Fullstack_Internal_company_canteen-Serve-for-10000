@@ -15,7 +15,7 @@ export function middleware(req: NextRequest) {
     console.log("Miiddleware checking chef role");
     return NextResponse.redirect(new URL("/chef", req.url));
   }
-
+  //abc
   // Chặn vào admin nếu không phải admin
   if (url.startsWith("/admin")) {
     if (!token || role !== "admin") {
