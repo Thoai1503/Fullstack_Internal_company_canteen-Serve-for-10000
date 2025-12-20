@@ -25,24 +25,24 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
         <hr />
         <ul className="nav nav-pills flex-column mb-auto">
           <li className="nav-item">
-            <Link href="/admin" className="nav-link active" aria-current="page">
+            <Link href="/chef" className="nav-link active" aria-current="page">
               <svg className="bi me-2" width="16" height="16"></svg>
               Home
             </Link>
           </li>
           <li>
-            <Link href="/admin" className="nav-link text-white">
+            <Link href="/chef" className="nav-link text-white">
               <svg className="bi me-2" width="16" height="16"></svg>
               Bảng điều khiển
             </Link>
           </li>
           <li>
-            <Link href="/admin/order" className="nav-link text-white">
+            <Link href="/chef/inventory" className="nav-link text-white">
               <svg className="bi me-2" width="16" height="16"></svg>
               Quản lý kho nguyên liệu
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link href="/admin/food" className="nav-link text-white">
               <svg className="bi me-2" width="16" height="16"></svg>
               Foods
@@ -53,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
               <svg className="bi me-2" width="16" height="16"></svg>
               Customers
             </a>
-          </li>
+          </li> */}
         </ul>
         <hr />
         <div className="dropdown">
