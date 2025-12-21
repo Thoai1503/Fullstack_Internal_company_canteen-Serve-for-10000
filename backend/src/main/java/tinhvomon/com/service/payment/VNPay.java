@@ -67,7 +67,8 @@ public class VNPay {
          }
          vnp_Params.put("vnp_ReturnUrl", vnPayConfig.getReturnUrl());
          vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
-         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+      // Lưu ý là "GMT+7", không có chữ "Etc/"
+         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("GMT+7"));
  
          SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
          String vnp_CreateDate = formatter.format(cld.getTime());
@@ -119,12 +120,7 @@ public class VNPay {
 
          String paymentUrl = vnPayConfig.getPayUrl() + "?" + queryUrl;
          System.out.print("Url: "+paymentUrl);
-//         com.google.gson.JsonObject job = new JsonObject();
-//         job.addProperty("code", "00");
-//         job.addProperty("message", "success");
-//         job.addProperty("data", paymentUrl);
-//         Gson gson = new Gson();
-        // resp.getWriter().write(gson.toJson(job));
+//   		
          return paymentUrl;
 	}
 
