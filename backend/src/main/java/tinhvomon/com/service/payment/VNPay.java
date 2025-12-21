@@ -1,5 +1,6 @@
 package tinhvomon.com.service.payment;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -14,7 +15,9 @@ import java.util.Map;
 import java.util.TimeZone;
 import com.google.gson.JsonObject;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
@@ -70,6 +73,10 @@ public class VNPay {
          String vnp_CreateDate = formatter.format(cld.getTime());
  
          vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+ 
+         cld.add(Calendar.MINUTE, 15);
+         String vnp_ExpireDate = formatter.format(cld.getTime());
+         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
          //Build data to hash and querystring
          List fieldNames = new ArrayList(vnp_Params.keySet());
@@ -97,6 +104,8 @@ public class VNPay {
                  }
              }
          }
+         System.out.println("Hash: "+hashData);
+
          String queryUrl = query.toString();
          
 
@@ -109,6 +118,7 @@ public class VNPay {
          
 
          String paymentUrl = vnPayConfig.getPayUrl() + "?" + queryUrl;
+         System.out.print("Url: "+paymentUrl);
 //         com.google.gson.JsonObject job = new JsonObject();
 //         job.addProperty("code", "00");
 //         job.addProperty("message", "success");
@@ -117,4 +127,7 @@ public class VNPay {
         // resp.getWriter().write(gson.toJson(job));
          return paymentUrl;
 	}
+
+    //vui lòng tham khảo thêm tại code demo
+    
 }

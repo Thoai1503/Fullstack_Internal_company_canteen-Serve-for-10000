@@ -1,6 +1,11 @@
 package tinhvomon.com.config;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.crypto.Mac;
@@ -43,7 +48,8 @@ public class VnPayConfig {
     private String hashSecret;
     private String payUrl;
     private String returnUrl;
-    public  String hmacSHA512(final String key, final String data) {
+    private static String secretKey = "";
+    public static  String hmacSHA512(final String key, final String data) {
         try {
 
             if (key == null || data == null) {
@@ -65,13 +71,40 @@ public class VnPayConfig {
             return "";
         }
     }
-    public String getIpAddress(HttpServletRequest request) {
-        String ipAddress = request.getHeader("X-FORWARDED-FOR"); // proxy/ngrok/Cloudflare
-        if (ipAddress == null) {
-            ipAddress = request.getRemoteAddr(); // trực tiếp từ request
+    public static String getIpAddress(HttpServletRequest request) {
+        String ipAdress;
+        try {
+            ipAdress = request.getHeader("X-FORWARDED-FOR");
+            if (ipAdress == null) {
+                ipAdress = request.getRemoteAddr();
+            }
+        } catch (Exception e) {
+            ipAdress = "Invalid IP:" + e.getMessage();
         }
-        return ipAddress;
+        return ipAdress;
     }
+    
+    public static String hashAllFields(Map fields) {
+        List fieldNames = new ArrayList(fields.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder sb = new StringBuilder();
+        Iterator itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = (String) itr.next();
+            String fieldValue = (String) fields.get(fieldName);
+            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                sb.append(fieldName);
+                sb.append("=");
+                sb.append(fieldValue);
+            }
+            if (itr.hasNext()) {
+                sb.append("&");
+            }
+        }
+        return hmacSHA512(secretKey,sb.toString());
+    }
+    
+    
     public  String getRandomNumber(int length) {
         String numbers = "0123456789";
         StringBuilder sb = new StringBuilder(length);

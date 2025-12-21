@@ -28,7 +28,7 @@ const Checkouts = ({
         alert(data.data);
         return;
       }
-      window.location.href = `${data.data}`;
+         window.location.href = `${data.data}`;
     },
     onError: (error) => {
       alert(error);

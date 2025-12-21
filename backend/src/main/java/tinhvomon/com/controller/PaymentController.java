@@ -159,7 +159,7 @@ System.out.println("Request: "+ request.getRemoteAddr());
         	   Order  order = orderRepository.update(pendingOrder);
         	   //xoá giỏ hàng
         	   var dCartItemsRe= cartItemRepository.delete(cart.getId());
-        	   
+        	   	
         	   System.out.println( "Re: " + dCartItemsRe);
         	   //cập nhật lịch sử trạng thái
         	   osh.setOrder_id(pendingOrder.getId());
