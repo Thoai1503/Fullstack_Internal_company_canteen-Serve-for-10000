@@ -59,6 +59,7 @@ public class PaymentController {
     @PostMapping("")
     public ResponseEntity<?> create (HttpServletRequest request,@RequestBody VnPayPayload vnPayPayload) throws Exception {
        		String url = vnPay.createPayment(request);
+       		System.out.println("Pay url: "+url);
 		Order o = new Order();
 		var user_id =Integer.valueOf( request.getParameter("orderInfo"));
 		o.setUser_id(user_id );
