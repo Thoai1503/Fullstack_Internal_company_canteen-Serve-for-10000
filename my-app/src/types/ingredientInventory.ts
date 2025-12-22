@@ -6,5 +6,6 @@ export interface IngredientInventory {
   base_unit_id: number;
   units: Unit;
   stock: number;
+  stock_limit: number;
   price_per_unit: number;
 }

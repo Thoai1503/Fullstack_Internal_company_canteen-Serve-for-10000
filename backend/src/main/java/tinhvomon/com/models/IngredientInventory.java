@@ -55,5 +55,12 @@ public class IngredientInventory {
 	private int base_unit_id;
 	private Units units;
 	private double stock;
+	public double getStock_limit() {
+		return stock_limit;
+	}
+	public void setStock_limit(double stock_limit) {
+		this.stock_limit = stock_limit;
+	}
+	private double stock_limit;
 	private double price_per_unit;
 }

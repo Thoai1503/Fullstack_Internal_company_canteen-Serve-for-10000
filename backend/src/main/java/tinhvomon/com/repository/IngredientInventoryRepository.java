@@ -91,14 +91,16 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 
 	@Override
 	public HashSet<IngredientInventory> getAll() {
-	   String sql= "select ii.id,ii.base_unit_id,ii.name,ii.stock,ii.price_per_unit,u.name as unit_name,u.conversion_factor from IngredientInventory ii inner join Units u on ii.base_unit_id = u.id";
+	   String sql= "select ii.id,ii.base_unit_id,ii.name,ii.stock,ii.stock_limit,ii.price_per_unit,u.name as unit_name,u.conversion_factor from IngredientInventory ii inner join Units u on ii.base_unit_id = u.id";
 	   	HashSet<IngredientInventory> list = new HashSet<IngredientInventory>();
 	   
 	   try(Connection con = sqldts.getConnection();
 		          PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 		   
 		    ResultSet rs = ps.executeQuery();
+		    
 		    while(rs.next()) {
+		    	System.out.println("Stock limit:"+rs.getDouble("stock"));
 		    	var unit= new Units();
 		    	unit.setName(rs.getString("unit_name"));
 		    	unit.setConversion_factor(rs.getDouble("conversion_factor"));
@@ -108,6 +110,7 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 		    	item.setName(rs.getString("name"));
 		    	item.setStock(rs.getDouble("stock"));
 		    	item.setPrice_per_unit(rs.getDouble("price_per_unit"));
+		    	item.setStock_limit(rs.getDouble("stock_limit"));
 		    	item.setUnits(unit);
 		    	list.add(item);
 		    	
@@ -128,7 +131,7 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 
 	
 	public List<IngredientInventory> getAllList() {
-		   String sql= "select ii.id,ii.base_unit_id,ii.name,ii.stock,ii.price_per_unit,u.name as unit_name,u.conversion_factor from IngredientInventory ii inner join Units u on ii.base_unit_id = u.id";
+		   String sql= "select ii.id,ii.base_unit_id,ii.stock_limit,ii.name,ii.stock,ii.price_per_unit,u.name as unit_name,u.conversion_factor from IngredientInventory ii inner join Units u on ii.base_unit_id = u.id";
 		   List<IngredientInventory> list = new ArrayList<IngredientInventory>();
 		   
 		   try(Connection con = sqldts.getConnection();
@@ -136,6 +139,7 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 			   
 			    ResultSet rs = ps.executeQuery();
 			    while(rs.next()) {
+			    	System.out.println("Stock limit:"+rs.getDouble("stock_limit"));
 			    	var unit= new Units();
 			    	unit.setName(rs.getString("unit_name"));
 			    	unit.setConversion_factor(rs.getDouble("conversion_factor"));
@@ -145,6 +149,7 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 			    	item.setName(rs.getString("name"));
 			    	item.setStock(rs.getDouble("stock"));
 			    	item.setPrice_per_unit(rs.getDouble("price_per_unit"));
+			    	item.setStock_limit(rs.getDouble("stock_limit"));
 			    	item.setUnits(unit);
 			    	list.add(item);
 			    	

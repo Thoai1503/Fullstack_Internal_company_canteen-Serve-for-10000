@@ -1,4 +1,6 @@
 "use client";
+import { inventoryQuery } from "@/query/inventory";
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
   BarChart,
@@ -140,7 +142,7 @@ const mockInventory: Array<{
 const ChefDashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("today");
   const [orderFilter, setOrderFilter] = useState("all");
-
+  const { data: inventoryList } = useQuery(inventoryQuery.list);
   const stats = {
     totalOrders: 283,
     pendingOrders: 5,
@@ -494,9 +496,56 @@ const ChefDashboard = () => {
                 Tình trạng kho
               </h5>
             </div>
-            <div className="card-body p-0">
+            <div
+              className="card-body p-0"
+              style={{ maxHeight: "400px", overflowY: "auto" }}
+            >
               <div className="list-group list-group-flush">
-                {mockInventory.map((item, index) => (
+                {inventoryList?.map((item, index) => {
+                  const stockState = (item.stock * 100) / item.stock_limit;
+                  let status = "critical" as "good" | "low" | "critical";
+                  if (stockState >= 40) {
+                    status = "good";
+                  } else if (stockState >= 15) {
+                    status = "low";
+                  } else {
+                    status = "critical";
+                  }
+                  return (
+                    <div key={index} className="list-group-item border-0 py-3">
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <h6 className="mb-0">{item.name}</h6>
+                        <span className={`badge bg-${getStockBadge(status)}`}>
+                          {status === "good"
+                            ? "Đủ"
+                            : status === "low"
+                            ? "Thấp"
+                            : "Cạn"}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <small className="text-muted">
+                          <i className="bi bi-box me-1"></i>
+                          {item.stock} {item.units.name}
+                        </small>
+                        <div
+                          className="progress"
+                          style={{ width: "100px", height: "6px" }}
+                        >
+                          <div
+                            className={`progress-bar bg-${getStockBadge(
+                              status
+                            )}`}
+                            style={{
+                              width: `${stockState}%`,
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                {/* {mockInventory.map((item, index) => (
                   <div key={index} className="list-group-item border-0 py-3">
                     <div className="d-flex justify-content-between align-items-center mb-2">
                       <h6 className="mb-0">{item.name}</h6>
@@ -536,7 +585,7 @@ const ChefDashboard = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                ))} */}
               </div>
             </div>
           </div>

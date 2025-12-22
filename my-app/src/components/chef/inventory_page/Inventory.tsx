@@ -159,6 +159,7 @@ const InventoryManagement = () => {
             baseUnits.find((u) => u.id === formData.base_unit_id)?.name || "",
           conversion_factors: 0,
         },
+        stock_limit: 0,
       };
       setIngredients([...ingredients, newIngredient]);
     } else if (modalType === "edit" && selectedIngredient) {

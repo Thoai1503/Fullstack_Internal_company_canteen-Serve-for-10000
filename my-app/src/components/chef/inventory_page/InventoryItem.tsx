@@ -14,7 +14,7 @@ const InventoryItem = ({
 }) => {
   const [ingredient, setIngredient] = useState(item);
   const totalItemValue = ingredient.stock * ingredient.price_per_unit;
-  const isLowStock = ingredient.stock < 70;
+  const isLowStock = ingredient.stock < (10 / 100) * ingredient.stock_limit;
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
