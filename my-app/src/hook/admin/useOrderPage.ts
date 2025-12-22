@@ -42,18 +42,37 @@ export const useOrderPage = () => {
       .map(([key, value]) => {
         if (!value || value === "all") return "";
         if (value instanceof Date) {
-          return `${key}=${value.getUTCDate()}-${
-            value.getUTCMonth() + 1
-          }-${value.getUTCFullYear()}`;
+          // return `${key}=${value.getUTCDate()}-${
+          //   value.getUTCMonth() + 1
+          // }-${value.getUTCFullYear()}`;
+          console.log("Date from input: " + value);
+          console.log("isoSt: " + value.toISOString());
+          const isoString = value.toISOString().split(".")[0];
+          return `${key}=${encodeURIComponent(isoString)}`;
         }
-        return `${key}=${value}`;
+        return `${key}=${encodeURIComponent(value)}`;
       })
       .filter(Boolean)
       .join("&");
   };
-
+  const queryString = useMemo(() => getQueryString(), [filters]);
+  const {
+    data: orderList,
+    isLoading,
+    error,
+    isError,
+    refetch,
+  } = useQuery({
+    ...orderQuery.list(queryString),
+    // The query key includes queryString, so it will refetch when queryString changes
+  });
   // Initialize filters from URL on mount
+
   useEffect(() => {
+    if (isError) {
+      alert("Lỗi token");
+    }
+
     const urlFilters: Partial<FilterProps> = {};
     let hasUrlParams = false;
 
@@ -66,6 +85,7 @@ export const useOrderPage = () => {
     const status = searchParams.get("status");
 
     if (startDate) {
+      //  alert(startDate);
       urlFilters.start_date = new Date(startDate);
       hasUrlParams = true;
     }
@@ -110,7 +130,6 @@ export const useOrderPage = () => {
     window.history.replaceState(null, "", newUrl);
   }, [filters, pathname]);
 
-  const queryString = useMemo(() => getQueryString(), [filters]);
   console.log("Current Filters: " + queryString);
 
   const handleChange = (
@@ -123,7 +142,7 @@ export const useOrderPage = () => {
       [name]:
         name === "start_date" || name === "end_date"
           ? value
-            ? new Date(value).getTime()
+            ? new Date(value)
             : null
           : name === "min_amount" || name === "max_amount"
           ? value
@@ -132,16 +151,6 @@ export const useOrderPage = () => {
           : value,
     }));
   };
-
-  const {
-    data: orderList,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    ...orderQuery.list(queryString),
-    // The query key includes queryString, so it will refetch when queryString changes
-  });
 
   // Helper to update filters
   const updateFilter = <K extends keyof FilterProps>(
@@ -173,5 +182,6 @@ export const useOrderPage = () => {
     statusOptions,
     isLoading,
     error,
+    isError,
   };
 };

@@ -4,13 +4,20 @@ import { Order } from "@/types/order";
 import React, { useState } from "react";
 import OrderItem from "./OrderItem";
 import { useFilterOrder } from "@/hook/admin/useFilterOrder";
+import { useRouter } from "next/navigation";
 
 const Orders = ({ orders }: { orders: Order[] }) => {
-  const { orderList, handleChange } = useOrderPage();
+  const router = useRouter();
+  const { orderList, handleChange, filters, isError } = useOrderPage();
   const [showFilters, setShowFilters] = useState(false);
 
   // Quyết định dùng data từ đâu
   const displayOrders = orderList && orderList.length > 0 ? orderList : orders;
+  React.useEffect(() => {
+    if (isError) {
+      router.push("/login?error=invalid-token");
+    }
+  }, [isError, router]);
 
   if (!orderList) {
     return (
@@ -96,7 +103,7 @@ const Orders = ({ orders }: { orders: Order[] }) => {
                     Phương thức thanh toán
                   </label>
                   <select className="form-select">
-                    <option value="">Tất cả</option>
+                    <option value="all">Tất cả</option>
                     <option value="credit_card">Thẻ tín dụng</option>
                     <option value="bank_transfer">Chuyển khoản</option>
                     <option value="cod">COD</option>
@@ -110,11 +117,18 @@ const Orders = ({ orders }: { orders: Order[] }) => {
                   </label>
                   <input
                     onChange={(event) => {
-                      console.log("Date: " + event.target.value);
+                      console.log("Date on change: " + filters.start_date);
                       handleChange(event);
                     }}
                     type="date"
                     name="start_date"
+                    value={
+                      filters.start_date
+                        ? new Date(filters.start_date)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
                     className="form-control"
                   />
                 </div>
@@ -128,6 +142,11 @@ const Orders = ({ orders }: { orders: Order[] }) => {
                     type="date"
                     name="end_date"
                     onChange={handleChange}
+                    value={
+                      filters.end_date
+                        ? new Date(filters.end_date).toISOString().split("T")[0]
+                        : ""
+                    }
                     className="form-control"
                   />
                 </div>
