@@ -19,7 +19,7 @@ export const useOrderPage = () => {
   console.log("Pathname: " + pathname);
   const searchParams = useSearchParams();
   console.log("Search Params: " + searchParams.toString());
-
+  const [isInitialized, setIsInitialized] = useState(false);
   const [filters, setFilters] = useState<FilterProps>({
     start_date: null,
     end_date: null,
@@ -69,10 +69,6 @@ export const useOrderPage = () => {
   // Initialize filters from URL on mount
 
   useEffect(() => {
-    if (isError) {
-      alert("Lỗi token");
-    }
-
     const urlFilters: Partial<FilterProps> = {};
     let hasUrlParams = false;
 
@@ -113,22 +109,25 @@ export const useOrderPage = () => {
       urlFilters.status = status as "all" | "1" | "2" | "3";
       hasUrlParams = true;
     }
+    console.log("Has all param: " + hasUrlParams);
 
     // If URL has params, use them
     if (hasUrlParams) {
       setFilters((prev) => ({ ...prev, ...urlFilters }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    setIsInitialized(true); // Add this line
   }, []); // Only run on mount
 
   // Update URL whenever filters change (after initial mount)
   useEffect(() => {
+    if (!isInitialized) return; // Add this guard
     const queryString = getQueryString();
     const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
 
     // Use window.history to avoid the router mounting issue
     window.history.replaceState(null, "", newUrl);
-  }, [filters, pathname]);
+  }, [filters, pathname, isInitialized]);
 
   console.log("Current Filters: " + queryString);
 
@@ -168,7 +167,7 @@ export const useOrderPage = () => {
       max_amount: null,
       sort_by: "date",
       sort_order: "asc",
-      status: "2",
+      status: "all",
     });
   };
 

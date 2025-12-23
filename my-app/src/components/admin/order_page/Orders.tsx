@@ -8,8 +8,31 @@ import { useRouter } from "next/navigation";
 
 const Orders = ({ orders }: { orders: Order[] }) => {
   const router = useRouter();
-  const { orderList, handleChange, filters, isError } = useOrderPage();
+  const [priceRange, setPriceRange] = useState({
+    min_amount: null,
+    max_amount: null,
+  });
+  const {
+    orderList,
+    handleChange,
+    filters,
+    isError,
+    resetFilters,
+    setFilters,
+  } = useOrderPage();
   const [showFilters, setShowFilters] = useState(false);
+
+  const handleChangePriceRange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPriceRange((pre) => ({ ...pre, [name]: value }));
+  };
+  const handleSubmitPriceRange = () => {
+    setFilters((pre) => ({
+      ...pre,
+      min_amount: priceRange.min_amount,
+      max_amount: priceRange.max_amount,
+    }));
+  };
 
   // Quyết định dùng data từ đâu
   const displayOrders = orderList && orderList.length > 0 ? orderList : orders;
@@ -87,6 +110,7 @@ const Orders = ({ orders }: { orders: Order[] }) => {
                   <select
                     className="form-select"
                     name="status"
+                    value={filters.status}
                     onChange={handleChange}
                   >
                     <option value="all">Tất cả</option>
@@ -158,6 +182,9 @@ const Orders = ({ orders }: { orders: Order[] }) => {
                   </label>
                   <input
                     type="number"
+                    name="min_amount"
+                    onChange={handleChangePriceRange}
+                    value={priceRange.min_amount || 0}
                     className="form-control"
                     placeholder="0"
                   />
@@ -170,6 +197,9 @@ const Orders = ({ orders }: { orders: Order[] }) => {
                   </label>
                   <input
                     type="number"
+                    name="max_amount"
+                    onChange={handleChangePriceRange}
+                    value={priceRange.max_amount || 0}
                     className="form-control"
                     placeholder="Không giới hạn"
                   />
@@ -203,11 +233,17 @@ const Orders = ({ orders }: { orders: Order[] }) => {
                 {/* Action Buttons */}
                 <div className="col-12">
                   <div className="d-flex gap-2 justify-content-end">
-                    <button className="btn btn-outline-secondary">
+                    <button
+                      className="btn btn-outline-secondary"
+                      onClick={resetFilters}
+                    >
                       <i className="bi bi-arrow-clockwise me-2"></i>
                       Đặt lại
                     </button>
-                    <button className="btn btn-primary">
+                    <button
+                      className="btn btn-primary"
+                      onClick={handleSubmitPriceRange}
+                    >
                       <i className="bi bi-check-circle me-2"></i>
                       Áp dụng bộ lọc
                     </button>
