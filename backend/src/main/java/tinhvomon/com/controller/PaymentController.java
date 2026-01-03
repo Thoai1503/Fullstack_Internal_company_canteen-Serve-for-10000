@@ -70,7 +70,7 @@ public class PaymentController {
 		var iilist =	ingredientInventoryRepository.CheckingStock(list);
 		for(var i : iilist) {
 			System.out.println("Id: "+i);
-		}
+		} 
 		if(// nếu mảng > 0 -> tồn tại sản phẩm hết hàng	
 			iilist.size()>0
 		  ) {

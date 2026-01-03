@@ -182,7 +182,7 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 	public boolean IsOutOfStock(int id, Double quantity) {
 		var list =this.getAllList();
 		for (IngredientInventory item :list) {
-			if(item.getId()== id&&  quantity> item.getStock()) {
+			if(item.getId()== id &&  quantity> item.getStock()) {
 				return true;	
 			}
 		}
