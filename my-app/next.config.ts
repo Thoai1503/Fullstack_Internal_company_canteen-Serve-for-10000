@@ -10,7 +10,7 @@ const nextConfig = {
         protocol: "http",
         hostname: "localhost",
         port: "8000",
-        pathname: "/Thoai-pro-spring/upload/**",
+        pathname: "/upload/**",
       },
       {
         protocol: "http",
