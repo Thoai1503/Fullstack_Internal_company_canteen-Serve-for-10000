@@ -41,7 +41,7 @@ public final class ConnectDataSource {
     }
 
     static {
-    	  String port = getEnvOrProp("DB_PORT", "sqlserver.port");
+    	  String port = getEnvOrProp("DB_PORT_SQL", "sqlserver.port");
         // ds = new SQLServerDataSource();
         // ds.setUser("sa");
         // ds.setPassword("123");
@@ -63,21 +63,13 @@ public final class ConnectDataSource {
         //  ds.setPortNumber(dbPort != null ? Integer.parseInt(dbPort) : 1433);
         //  ds.setDatabaseName(dbName != null ? dbName : "ProductDB");
 
-//          ds.setUser("sa");
-//        ds.setPassword("thoaivip@13");
-//        ds.setServerName("103.90.225.130");
-//        ds.setPortNumber(1433);
-//        ds.setDatabaseName("ProductDB");       
-//        ds.setEncrypt(false);              
-//        ds.setTrustServerCertificate(true); 
-//        ds.setLoginTimeout(10); 
-//        
+ 
         
-        ds.setUser(getEnvOrProp("DB_USER", "sqlserver.username"));
-        ds.setPassword(getEnvOrProp("DB_PASSWORD", "sqlserver.password"));
-        ds.setServerName(getEnvOrProp("DB_HOST", "sqlserver.host"));
+        ds.setUser(getEnvOrProp("DB_USER_SQL", "sqlserver.username"));
+        ds.setPassword(getEnvOrProp("DB_PASSWORD_SQL", "sqlserver.password"));
+        ds.setServerName(getEnvOrProp("DB_HOST_SQL", "sqlserver.host"));
         ds.setPortNumber(Integer.parseInt(port));
-        ds.setDatabaseName(getEnvOrProp("DB_NAME", "sqlserver.database"));       
+        ds.setDatabaseName(getEnvOrProp("DB_NAME_SQL", "sqlserver.database"));       
         ds.setEncrypt(false);              
         ds.setTrustServerCertificate(true); 
         ds.setLoginTimeout(10); 
