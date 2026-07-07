@@ -1,4 +1,4 @@
-package tinhvomon.com;
+  package tinhvomon.com;
 
 import java.util.Arrays;
 
@@ -44,15 +44,15 @@ public class SercurityConfig  {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))  
 			 .httpBasic(h -> h.disable())
 	            .formLogin(f -> f.disable())
-    .addFilterBefore(headerLoggingFilter, 
-            org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
     .authorizeHttpRequests(auth -> auth
     		.requestMatchers("/auth/login", "/public/**","/auth/register","/auth/verifytoken","/upload/**","/payment/vnpay_return","/test/**","/hello").permitAll() 
     		.anyRequest().authenticated()
-    		)     
+    )     
 	    
 
-		.authenticationProvider(authenticationProvider()).
+		.authenticationProvider(authenticationProvider())
+		.addFilterBefore(headerLoggingFilter, 
+				org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class).
 		build();
 	
 	}
@@ -76,8 +76,8 @@ public class SercurityConfig  {
             "http://localhost:4200",
             "http://localhost:8080",
             "http://127.0.0.1:3000",
-            "http://103.90.225.130:3000",
-             "http://103.90.225.130:3001"
+            "http://103.118.28.72:3004"
+           
         ));
         
         // Or allow all origins (not recommended for production)
@@ -105,7 +105,7 @@ public class SercurityConfig  {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
+    }	
 	
 	@Bean
 	public AuthenticationProvider authenticationProvider() {

@@ -52,7 +52,7 @@ public class UserController {
 	
 	
 	@PostMapping("/login")
-	public ResponseEntity<?> login (@RequestBody User user,Authentication authentication, HttpServletResponse response) {
+	public ResponseEntity<?> login (@RequestBody User user,Authentication authentication, HttpServletResponse response	) {
 
 		System.out.println("Credential: "+user.getEmail()+" "+user.getPassword());
 

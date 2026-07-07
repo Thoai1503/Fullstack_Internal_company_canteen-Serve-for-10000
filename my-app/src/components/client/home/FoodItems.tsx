@@ -16,20 +16,28 @@ const FoodItems = ({
 }) => {
   const [foodItem, setFoodItem] = useState<FoodItem>(item);
   const { handleAdd, handleUpdate } = useCartFeature(setFoodItem, foodItem);
+  const formatPrice = (price: number) => {
+    return price.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
   return (
     <div key={idx} className="col-lg-4 menu-item">
       <a href={foodItem.image} className="glightbox">
         <Images
-          src={`${API_URL}/upload/${foodItem.image.trim()}?h=120&fit=crop&auto=format&dpr=2 2x`}
-          className="menu-img img-fluid"
-          width={120}
-          height={120}
-          alt={foodItem.image}
+          src={`${API_URL}/upload/${foodItem.image.trim()}`}
+          alt={`Hình ảnh ${item.name}`}
+          width={280}
+          height={180}
+          className="rounded "
+          style={{ objectFit: "cover" }}
+          unoptimized // Add this if using external URLs
         />
       </a>
-      <h4>{foodItem.name}</h4>
+      <h4 className="menu-title mt-3">{foodItem.name}</h4>
       <p className="ingredients">{foodItem.description.slice(0, 20)}</p>
-      <p className="price">{foodItem.price}</p>
+      <p className="price">{formatPrice(foodItem.price)}</p>
       <div className="d-flex justify-content-center align-items-center pb-2 mb-1 ">
         {foodItem.inCart ? (
           <button

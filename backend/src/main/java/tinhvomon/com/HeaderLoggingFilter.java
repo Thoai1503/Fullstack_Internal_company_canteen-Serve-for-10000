@@ -44,7 +44,7 @@ public class HeaderLoggingFilter extends OncePerRequestFilter {
 
         // ⭐ QUAN TRỌNG: Bỏ qua OPTIONS request (CORS preflight)
 
-
+       // String alreadyFilteredAttributeName = getAlreadyFilteredAttributeName();
     	
         String userAgent = request.getHeader("User-Agent");
         String authorization = request.getHeader("Authorization");

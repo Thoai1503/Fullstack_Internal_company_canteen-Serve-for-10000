@@ -32,7 +32,7 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (
     credentials: { email: string; password: string },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const response = await http.post("/auth/login", credentials, {
@@ -56,14 +56,14 @@ export const loginUser = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (
     userData: { email: string; password: string; name: string },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const response = await fetch("/api/auth/register", {
@@ -87,7 +87,7 @@ export const registerUser = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Network error");
     }
-  }
+  },
 );
 
 export const logoutUser = createAsyncThunk(
@@ -105,7 +105,7 @@ export const logoutUser = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const verifyToken = createAsyncThunk(
@@ -130,7 +130,7 @@ export const verifyToken = createAsyncThunk(
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.data) {
@@ -160,7 +160,7 @@ export const verifyToken = createAsyncThunk(
       window.location.pathname = "/login";
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 // Create slice
@@ -170,7 +170,7 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: User; token: string }>
+      action: PayloadAction<{ user: User; token: string }>,
     ) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
@@ -266,7 +266,7 @@ const authSlice = createSlice({
         state.error =
           typeof payload === "string"
             ? payload
-            : payload?.message ?? "Invalid or no token";
+            : (payload?.message ?? "Invalid or no token");
       });
   },
 });

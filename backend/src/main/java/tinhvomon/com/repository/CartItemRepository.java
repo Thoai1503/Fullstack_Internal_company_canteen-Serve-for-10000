@@ -104,6 +104,21 @@ public class CartItemRepository implements IRepo<CartItem> {
 		return false;
 	}
 
+	public boolean deleteById(int id) {
+		String sql = "delete CartItems where id = ?";
+		try (Connection con = sqldts.getConnection();
+				PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			ps.setInt(1, id);
+			int rows = ps.executeUpdate();
+			if (rows > 0) {
+				return true;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+
 	@Override
 	public HashSet<CartItem> getAll() {
 		// TODO Auto-generated method stub

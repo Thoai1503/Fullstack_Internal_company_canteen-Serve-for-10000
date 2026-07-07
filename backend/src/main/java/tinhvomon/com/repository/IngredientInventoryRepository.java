@@ -3,6 +3,7 @@ package tinhvomon.com.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -226,5 +227,46 @@ public class IngredientInventoryRepository implements IRepo<IngredientInventory>
 		 return false;
 		
 	}
+	
+	public Double getStockByIngredientId(int ingredientId) {
+	    String sql = "SELECT stock FROM IngredientInventory WITH (UPDLOCK, ROWLOCK) WHERE id = ?";
 
+	    Connection con = null;
+	    try {
+	        con = sqldts.getConnection();
+	        con.setAutoCommit(false);                    // Bắt buộc
+
+	        try (PreparedStatement ps = con.prepareStatement(sql)) {
+	            ps.setInt(1, ingredientId);
+	            
+	            try (ResultSet rs = ps.executeQuery()) {
+	                if (rs.next()) {
+	                    return rs.getDouble("stock");
+	                } else {
+	                    con.rollback(); // không tồn tại
+	                    return null;
+	                }
+	            }
+	        }
+	    } catch (Exception ex) {
+	        ex.printStackTrace();
+	        if (con != null) {
+	            try {
+	                con.rollback();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	        return null;
+	    } finally {
+	        if (con != null) {
+	            try {
+	                con.setAutoCommit(true); // khôi phục
+	                con.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+	}
 }

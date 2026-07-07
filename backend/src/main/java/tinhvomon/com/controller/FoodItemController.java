@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,16 +33,16 @@ import tinhvomon.com.repository.FoodItemRepository;
 public class FoodItemController {
 	private final FoodItemRepository foodItemRepository;
 
-    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/upload/";; // Define your upload directory
+    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/webapp/upload/";; // Define your upload directory
 
     @PostMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity update(
             @PathVariable Long id,
-            @RequestPart("item") FoodItem item,
+            @RequestPart(value="item",required = false) FoodItem item,
             @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {  // ✅ Optional
         Path uploadPath = Paths.get(UPLOAD_DIR);
         System.out.println("ID: " + id);
-        System.out.println(item.getImage());
+       // System.out.println(item.getImage());
         
         if (image != null && !image.isEmpty()) {
             System.out.println("Image: " + image.getOriginalFilename());
@@ -117,6 +121,66 @@ System.out.println("Result: "+ result);
 		return ResponseEntity.ok(item);
 	}
 	
+	
+	@PostMapping(value = "/uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> update2(
+	        @PathVariable Long id,
+	        @RequestPart(value = "item", required = false) FoodItem item,
+	        @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+	    
+	    Path uploadPath = Paths.get(UPLOAD_DIR);
+	    
+	    // Tạo thư mục nếu chưa có
+	    if (!Files.exists(uploadPath)) {
+	        Files.createDirectories(uploadPath);
+	    }
+	    
+	    List<String> savedFileNames = new ArrayList<>();
+	    
+	    if (images != null && !images.isEmpty()) {
+	        for (MultipartFile image : images) {
+	            if (!image.isEmpty()) {
+	                // Validate file type
+	                String contentType = image.getContentType();
+	                if (!isValidImageType(contentType)) {
+	                    return ResponseEntity.badRequest()
+	                        .body("Invalid file type: " + image.getOriginalFilename());
+	                }
+	                
+	                // Tạo tên file unique
+	                String uniqueName = System.currentTimeMillis() + "_" + 
+	                                   UUID.randomUUID() + "_" + 
+	                                   image.getOriginalFilename();
+	                System.out.println("Image name: "+uniqueName);
+	                Path filePath = uploadPath.resolve(uniqueName);
+	                
+	                // Lưu file
+	                Files.copy(image.getInputStream(), filePath, 
+	                          StandardCopyOption.REPLACE_EXISTING);
+	                
+	                savedFileNames.add(uniqueName);
+	            }
+	        }
+	        
+	        // Lưu danh sách ảnh vào database
+	        // Option 1: Lưu dạng JSON array
+	        item.setImage(String.join(",", savedFileNames)); // "img1.jpg,img2.jpg"
+	        
+	        // Option 2: Có bảng riêng FoodItemImage
+	        // saveImagesToDatabase(id, savedFileNames);
+	    }
+	    
+	    var result = foodItemRepository.update(item);
+	    return ResponseEntity.ok(result);
+	}
+
+	private boolean isValidImageType(String contentType) {
+	    return contentType != null && 
+	           (contentType.equals("image/jpeg") || 
+	            contentType.equals("image/png") || 
+	            contentType.equals("image/jpg") ||
+	            contentType.equals("image/webp"));
+	}
 	
 	
 

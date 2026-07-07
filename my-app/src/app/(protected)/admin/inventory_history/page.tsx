@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Download,
   Filter,
@@ -9,7 +9,19 @@ import {
   Calendar,
   RefreshCw,
   X,
+  AlertCircle,
 } from "lucide-react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { getAllInventoryAudit } from "@/service/inventoryAudit";
+interface FilterState {
+  ingredientId?: string;
+  source_type?: string;
+  transaction_type?: string;
+  search?: string;
+  date_from?: string;
+  date_to?: string;
+}
 
 const InventoryHistory = () => {
   const [selectedMaterial, setSelectedMaterial] = useState("gao-te");
@@ -20,11 +32,42 @@ const InventoryHistory = () => {
   const [dateTo, setDateTo] = useState("");
   const [sortBy, setSortBy] = useState("date-desc");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [filterState, setFilterState] = useState<FilterState>({});
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { data: auditList } = useQuery({
+    queryKey: ["inventoryHistory", filterState],
+    queryFn: async () => getAllInventoryAudit(filterState),
+  });
+  console.log("Inventory history data:", auditList);
+  useEffect(() => {
+    console.log("SearchParams changed:", searchParams.toString());
+    setFilterState({
+      ingredientId: searchParams.get("ingredientId") || undefined,
+      source_type: searchParams.get("source_type") || undefined,
+      transaction_type: searchParams.get("transaction_type") || undefined,
+      search: searchParams.get("search") || undefined,
+      date_from: searchParams.get("date_from") || undefined,
+      date_to: searchParams.get("date_to") || undefined,
+    });
+  }, [searchParams]);
+
+  const updateFilter = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    console.log("params before update:", params.toString());
+    if (value) params.set(key, value);
+    else params.delete(key);
+
+    params.set("page", "1");
+
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   // Dữ liệu mẫu
   const materials = [
     {
-      id: "gao-te",
+      id: "1",
       name: "Gạo tẻ",
       unit: "kg",
       currentStock: 150,
@@ -32,7 +75,7 @@ const InventoryHistory = () => {
       maxStock: 200,
     },
     {
-      id: "thit-bo",
+      id: "9",
       name: "Thịt bò",
       unit: "kg",
       currentStock: 45,
@@ -40,7 +83,7 @@ const InventoryHistory = () => {
       maxStock: 80,
     },
     {
-      id: "thit-ga",
+      id: "3",
       name: "Thịt gà",
       unit: "kg",
       currentStock: 60,
@@ -48,7 +91,7 @@ const InventoryHistory = () => {
       maxStock: 100,
     },
     {
-      id: "ca-chua",
+      id: "4",
       name: "Cà chua",
       unit: "kg",
       currentStock: 25,
@@ -56,17 +99,73 @@ const InventoryHistory = () => {
       maxStock: 50,
     },
     {
-      id: "hanh-tay",
+      id: "5",
       name: "Hành tây",
       unit: "kg",
       currentStock: 18,
       minStock: 8,
       maxStock: 40,
     },
+    {
+      id: "108",
+      name: "Cà chua",
+      unit: "kg",
+      currentStock: 25,
+      minStock: 10,
+      maxStock: 50,
+    },
+    {
+      id: "109",
+      name: "Nước mắm",
+      unit: "ml",
+      currentStock: 100,
+      minStock: 50,
+      maxStock: 200,
+    },
+    {
+      id: "110",
+      name: "Dầu ăn",
+      unit: "ml",
+      currentStock: 50,
+      minStock: 20,
+      maxStock: 100,
+    },
+    {
+      id: "113",
+      name: "Muối",
+      unit: "kg",
+      currentStock: 30,
+      minStock: 10,
+      maxStock: 50,
+    },
+    {
+      id: "121",
+      name: "Đường",
+      unit: "kg",
+      currentStock: 40,
+      minStock: 15,
+      maxStock: 60,
+    },
+    {
+      id: "122",
+      name: "Bột ngọt",
+      unit: "kg",
+      currentStock: 20,
+      minStock: 5,
+      maxStock: 40,
+    },
+    {
+      id: "123",
+      name: "Tiêu",
+      unit: "kg",
+      currentStock: 10,
+      minStock: 2,
+      maxStock: 20,
+    },
   ];
 
   const historyData: Record<string, any[]> = {
-    "gao-te": [
+    "1": [
       {
         id: 1,
         date: "2024-12-20 14:30",
@@ -188,7 +287,7 @@ const InventoryHistory = () => {
         source: "manual",
       },
     ],
-    "thit-bo": [
+    "9": [
       {
         id: 1,
         date: "2024-12-20 08:30",
@@ -423,7 +522,13 @@ const InventoryHistory = () => {
               <select
                 className="form-select form-select-lg"
                 value={selectedMaterial}
-                onChange={(e) => setSelectedMaterial(e.target.value)}
+                onChange={(e) => {
+                  setSelectedMaterial(e.target.value);
+                  setFilterState((prev) => ({
+                    ...prev,
+                    ingredientId: e.target.value,
+                  }));
+                }}
               >
                 {materials.map((material) => (
                   <option key={material.id} value={material.id}>
@@ -561,12 +666,15 @@ const InventoryHistory = () => {
                     <select
                       className="form-select"
                       value={filterType}
-                      onChange={(e) => setFilterType(e.target.value)}
+                      onChange={(e) => {
+                        updateFilter("transaction_type", e.target.value);
+                        setFilterType(e.target.value);
+                      }}
                     >
-                      <option value="all">Tất cả</option>
-                      <option value="import">Nhập kho</option>
-                      <option value="export">Xuất kho (thủ công)</option>
-                      <option value="deduction">Khấu trừ (đơn hàng)</option>
+                      <option value="0">Tất cả</option>
+                      <option value="1">Nhập kho</option>
+                      <option value="2">Xuất kho (thủ công)</option>
+                      <option value="3">Khấu trừ (đơn hàng)</option>
                     </select>
                   </div>
 
@@ -577,12 +685,15 @@ const InventoryHistory = () => {
                     <select
                       className="form-select"
                       value={filterSource}
-                      onChange={(e) => setFilterSource(e.target.value)}
+                      onChange={(e) => {
+                        setFilterSource(e.target.value);
+                        updateFilter("source_type", e.target.value);
+                      }}
                     >
-                      <option value="all">Tất cả</option>
-                      <option value="purchase">Nhập hàng</option>
-                      <option value="order">Đơn hàng khách</option>
-                      <option value="manual">Xuất thủ công</option>
+                      <option value="0">Tất cả</option>
+                      <option value="1">Nhập hàng</option>
+                      <option value="2">Đơn hàng khách</option>
+                      <option value="3">Xuất thủ công</option>
                     </select>
                   </div>
 
@@ -704,8 +815,8 @@ const InventoryHistory = () => {
                     {filterType === "import"
                       ? "Nhập kho"
                       : filterType === "export"
-                      ? "Xuất kho"
-                      : "Khấu trừ"}
+                        ? "Xuất kho"
+                        : "Khấu trừ"}
                   </span>
                 )}
                 {filterSource !== "all" && (
@@ -713,8 +824,8 @@ const InventoryHistory = () => {
                     {filterSource === "purchase"
                       ? "Nhập hàng"
                       : filterSource === "order"
-                      ? "Đơn hàng"
-                      : "Thủ công"}
+                        ? "Đơn hàng"
+                        : "Thủ công"}
                   </span>
                 )}
                 {searchTerm && (
@@ -821,7 +932,7 @@ const InventoryHistory = () => {
                           <td className="py-3 fw-semibold text-success">
                             {item.price
                               ? `${(item.quantity * item.price).toLocaleString(
-                                  "vi-VN"
+                                  "vi-VN",
                                 )}₫`
                               : "-"}
                           </td>
@@ -863,6 +974,103 @@ const InventoryHistory = () => {
                         </tr>
                       ))
                     )}
+                    {auditList &&
+                      auditList.map((audit) => {
+                        const dateTime = "2026-07-03T05:06:32.833";
+
+                        const date = new Date(audit.created_at);
+
+                        const ngay = date.toLocaleDateString("vi-VN"); // 03/07/2026
+                        const gio = date.toLocaleTimeString("vi-VN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        }); // 05:06:32
+                        return (
+                          <tr key={audit.id}>
+                            <td className="py-3">
+                              <div className="fw-semibold">{ngay}</div>
+                              <small className="text-muted">{gio}</small>
+                            </td>
+                            <td className="py-3">
+                              {audit.type === "import" ? (
+                                <span className="badge bg-primary">
+                                  <TrendingUp size={14} className="me-1" />
+                                  Nhập kho
+                                </span>
+                              ) : audit.type === "deduction" ? (
+                                <span className="badge bg-warning text-dark">
+                                  🛒 Khấu trừ
+                                </span>
+                              ) : (
+                                <span className="badge bg-danger">
+                                  <TrendingDown size={14} className="me-1" />
+                                  Xuất kho
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-3 fw-semibold">
+                              <span
+                                className={
+                                  audit.type === "import"
+                                    ? "text-success"
+                                    : "text-danger"
+                                }
+                              >
+                                {audit.type === "import" ? "+" : "-"}
+                                {audit.stock_adjust} {currentMaterial?.unit}
+                              </span>
+                            </td>
+                            <td className="py-3">
+                              {audit.price
+                                ? `${audit.price.toLocaleString("vi-VN")}₫`
+                                : "-"}
+                            </td>
+                            <td className="py-3 fw-semibold text-success">
+                              {audit.price
+                                ? `${(
+                                    audit.quantity * audit.price
+                                  ).toLocaleString("vi-VN")}₫`
+                                : "-"}
+                            </td>
+                            <td className="py-3">
+                              {audit.type === "deduction" ? (
+                                <div>
+                                  <div className="fw-semibold text-primary">
+                                    {audit.customerName}
+                                  </div>
+                                  <small className="text-muted">
+                                    → {audit.dishName}
+                                  </small>
+                                </div>
+                              ) : (
+                                "-"
+                              )}
+                            </td>
+                            <td className="py-3">
+                              {audit.type === "import" ? (
+                                <small className="text-muted">
+                                  <div className="fw-semibold">
+                                    NCC: {audit.supplier}
+                                  </div>
+                                </small>
+                              ) : (
+                                <small className="text-muted">
+                                  <span className="badge bg-light text-dark border">
+                                    {audit.orderCode || "Thủ công"}
+                                  </span>
+                                </small>
+                              )}
+                            </td>
+                            <td className="py-3">
+                              <small>{audit.note}</small>
+                            </td>
+                            <td className="py-3">
+                              <small className="text-muted">{audit.user}</small>
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>

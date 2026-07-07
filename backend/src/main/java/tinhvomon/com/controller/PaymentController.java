@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import tinhvomon.com.models.CancellationRequest;
 import tinhvomon.com.models.Cart;
 import tinhvomon.com.models.CartItem;
 import tinhvomon.com.models.FoodIngredient;
 import tinhvomon.com.models.FoodType;
+import tinhvomon.com.models.InventoryAudit;
 import tinhvomon.com.models.Order;
 import tinhvomon.com.models.OrderItems;
 import tinhvomon.com.models.OrderStatusHistory;
@@ -30,6 +32,9 @@ import tinhvomon.com.repository.IngredientInventoryRepository;
 import tinhvomon.com.repository.OrderItemRepository;
 import tinhvomon.com.repository.OrderRepository;
 import tinhvomon.com.repository.OrderStatusHistoryRepository;
+import tinhvomon.com.service.bussiness.InventoryAndAuditService;
+import tinhvomon.com.service.bussiness.InventoryAuditService;
+import tinhvomon.com.service.bussiness.OrderItemService;
 import tinhvomon.com.service.payment.VNPay;
 
 @RestController
@@ -44,15 +49,23 @@ public class PaymentController {
     private final OrderItemRepository orderItemRepository;
     private final OrderStatusHistoryRepository orderStatusHistoryRepository;
     private final IngredientInventoryRepository ingredientInventoryRepository;
+	private final OrderItemService orderItemService;
+	private final InventoryAuditService inventoryAuditService;
+	private final InventoryAndAuditService inventoryAndAuditService;
+		
+	
 	
 	@Autowired
-	public PaymentController(CartRepository cartRepository,CartItemRepository cartItemRepository,OrderRepository orderRepository,OrderItemRepository orderItemRepository ,OrderStatusHistoryRepository orderStatusHistoryRepository,IngredientInventoryRepository ingredientInventoryRepository) {
+	public PaymentController(CartRepository cartRepository,CartItemRepository cartItemRepository,OrderRepository orderRepository,OrderItemRepository orderItemRepository ,OrderStatusHistoryRepository orderStatusHistoryRepository,IngredientInventoryRepository ingredientInventoryRepository,OrderItemService orderItemService,InventoryAuditService inventoryAuditService,InventoryAndAuditService inventoryAndAuditService) {
 		this.cartItemRepository =cartItemRepository;
 		this.cartRepository= cartRepository;
 		this.orderRepository = orderRepository;
+		this.orderItemService = orderItemService;
 		this.orderItemRepository = orderItemRepository;
+		this.inventoryAuditService = inventoryAuditService;
 		this.orderStatusHistoryRepository = orderStatusHistoryRepository;
 		this.ingredientInventoryRepository = ingredientInventoryRepository;
+		this.inventoryAndAuditService = inventoryAndAuditService;
 	} 
 	@Autowired
 	private VNPay vnPay ;
@@ -62,19 +75,24 @@ public class PaymentController {
        		System.out.println("Pay url: "+url);
 		Order o = new Order();
 		var user_id =Integer.valueOf( request.getParameter("orderInfo"));
-		o.setUser_id(user_id );
+		o.setUser_id(user_id);
 		o.setTotal_amount(Double.valueOf(request.getParameter("amount")));
 		o.setStatus(1);
 		HashSet<CartItem> list =  cartItemRepository.FindByUserId(user_id);
 		//check lượng tồn kho
 		var iilist =	ingredientInventoryRepository.CheckingStock(list);
-		for(var i : iilist) {
-			System.out.println("Id: "+i);
-		} 
+	
 		if(// nếu mảng > 0 -> tồn tại sản phẩm hết hàng	
 			iilist.size()>0
 		  ) {
-			return ResponseEntity.ok("Hết hàng");
+			StringBuilder sb = new StringBuilder();
+			iilist.forEach((id)->{
+				System.out.println("Id: "+id);
+				sb.append(id).append(", ");
+			});
+			
+			String message = "Các sản phẩm sau đã hết hàng: " + sb.toString();
+			return ResponseEntity.ok(message);
 			}
 		
 		
@@ -97,7 +115,7 @@ public class PaymentController {
 			i.setQuantity(item.getQuantity());
 			i.setTotal_price(item.getFood().getPrice()*item.getQuantity());
 			i.setUnit_price(item.getFood().getPrice());
-			var re = orderItemRepository.create(i);
+			orderItemService.createOrderItem(i);
 		}
 
     	System.out.println("Date: "+ request.getParameter("orderInfo"));
@@ -106,6 +124,7 @@ System.out.println("Request: "+ request.getRemoteAddr());
 		   return ResponseEntity.ok(url); 
 	}
     @GetMapping("/vnpay_return")
+    @Transactional
     public RedirectView returnVnPay ( HttpServletRequest request) throws Exception {
     	
         OrderStatusHistory osh = new OrderStatusHistory();
@@ -142,11 +161,22 @@ System.out.println("Request: "+ request.getRemoteAddr());
         	   for(OrderItems item:orderItems) {
             	   System.out.println("order item info: "+ item.getFood_id() +" / " +item.getQuantity());
         		  //phân rã ra từng thành phần
-        		  HashSet<FoodIngredient> fiList = ingredientInventoryRepository.ExtractToFoodIngredient(item.getFood_id(), item.getQuantity());
+        		     HashSet<FoodIngredient> fiList = ingredientInventoryRepository.ExtractToFoodIngredient(item.getFood_id(), item.getQuantity());
         		  	 System.out.println("Ingredient length: "+ fiList.size());
         		     for(FoodIngredient fid:fiList) {
-        		 var stock = ingredientInventoryRepository.substractStock(fid.getIngredient_id(), fid.getQuantity());
+        		     var stock = ingredientInventoryRepository.substractStock(fid.getIngredient_id(), fid.getQuantity());
         		    	 System.out.println("Updated stock: "+ stock);
+//        		    	 InventoryAudit ia = new InventoryAudit();
+//        		    	 ia.setIngredient_id(fid.getIngredient_id());
+//        		    	 ia.setSource_id(pendingOrder.getId());
+//        		    	 ia.setSource_type(1);
+//        		    	 ia.setAdjust_type(2);
+//        		    	 ia.setStock_adjust((fid.getQuantity()));
+//        		    	 ia.setUnit_price(0L);
+//        		    	 ia.setNote("Trừ tồn kho từ đơn hàng: "+pendingOrder.getId());
+//        		    	 inventoryAuditService.create(ia);
+        		    	 
+        		    	 
         		     }  
         		     
         	   } 
@@ -174,7 +204,7 @@ System.out.println("Request: "+ request.getRemoteAddr());
         	   
         	   System.out.println("OrderStatusHistory Re: " + re.getId());
         	   
-        	     return new RedirectView("http://103.90.225.130:3001/success");
+        	     return new RedirectView("http://103.118.28.72:3004/success");
            }
            
            

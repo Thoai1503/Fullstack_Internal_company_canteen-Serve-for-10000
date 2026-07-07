@@ -5,7 +5,7 @@ services:
     image: thoaimanhlong/fullstack_internal_company_canteen-serve-for-10000-backend:latest
     container_name: fullstack_internal_company_canteen-serve-for-10000-backend
     ports:
-      - "8002:8080"
+      - "8010:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     restart: unless-stopped
@@ -14,7 +14,7 @@ services:
     image: thoaimanhlong/fullstack_internal_company_canteen-serve-for-10000-frontend:latest
     container_name: fullstack_internal_company_canteen-serve-for-10000-frontend
     ports:
-      - "3001:3000"
+      - "3004:3000"
     environment:
       - NODE_ENV=production
     depends_on:

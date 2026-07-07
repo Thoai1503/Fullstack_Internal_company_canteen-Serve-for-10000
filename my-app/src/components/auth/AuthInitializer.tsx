@@ -60,7 +60,16 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
 
   // Only render children if authenticated
   if (!isAuthenticated) {
-    return null;
+    // Or you could render a message like "Not authorized"
+    // return null;
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: "100vh" }}
+      >
+        <h3 className="text-danger">Bạn không có quyền truy cập trang này.</h3>
+      </div>
+    );
   }
 
   return (

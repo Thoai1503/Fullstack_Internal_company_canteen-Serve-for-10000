@@ -1,6 +1,7 @@
 package tinhvomon.com.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,10 +28,20 @@ public class CartItemController {
 	 return ResponseEntity.ok(list);
  }
  @PostMapping("/{id}")
- public ResponseEntity updateQuantity(@RequestBody CartItem ci) {
+ public ResponseEntity updateQuantity(@PathVariable int id, @RequestBody CartItem ci) {
+	 ci.setId(id);
 	 var en  =cartItemRepository.update(ci);
 	 return ResponseEntity.ok(en);
 	 
+ }
+
+ @DeleteMapping("/{id}")
+ public ResponseEntity deleteCartItem(@PathVariable int id) {
+	 var deleted = cartItemRepository.deleteById(id);
+	 if (deleted) {
+	 	return ResponseEntity.ok("Delete cart item successfully");
+	 }
+	 return ResponseEntity.badRequest().body("Cart item not found");
  }
  
 }

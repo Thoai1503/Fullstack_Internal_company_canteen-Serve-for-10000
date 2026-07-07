@@ -1,0 +1,17 @@
+# docker-compose.yml
+services:
+  backend:
+    build:
+      context: ./backend
+    image: thoaimanhlong/fullstack_internal_company_canteen-serve-for-10000-backend:latest
+    container_name: spring_app1
+    ports:
+      - "8010:8080"
+
+  frontend:
+    build:
+      context: ./my-app
+    image: thoaimanhlong/fullstack_internal_company_canteen-serve-for-10000-frontend:latest
+    container_name: next_app1
+    ports:
+      - "3001:3000"
